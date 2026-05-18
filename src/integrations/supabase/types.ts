@@ -14,7 +14,133 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lesson_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          created_at: string
+          description: string
+          duration: string | null
+          id: string
+          level_id: string
+          pdf_url: string
+          slug: string
+          sort_order: number
+          title: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          duration?: string | null
+          id?: string
+          level_id: string
+          pdf_url: string
+          slug: string
+          sort_order?: number
+          title: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          duration?: string | null
+          id?: string
+          level_id?: string
+          pdf_url?: string
+          slug?: string
+          sort_order?: number
+          title?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_level_id_fkey"
+            columns: ["level_id"]
+            isOneToOne: false
+            referencedRelation: "levels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      levels: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          name: string
+          sort_order: number
+          tagline: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id: string
+          name: string
+          sort_order?: number
+          tagline: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          tagline?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
