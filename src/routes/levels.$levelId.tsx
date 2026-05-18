@@ -75,7 +75,7 @@ function LevelPage() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-4">
-          {level.lessons.map((lesson, idx) => (
+          {level.lessons.map((lesson: typeof level.lessons[number], idx: number) => (
             <Link
               key={lesson.id}
               to="/levels/$levelId/$lessonId"

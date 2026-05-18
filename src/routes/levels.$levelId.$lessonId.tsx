@@ -96,8 +96,8 @@ function LessonPage() {
           <h2 className="text-sm font-medium text-muted-foreground">More lessons in {level.name}</h2>
           <div className="mt-3 grid gap-2">
             {level.lessons
-              .filter((l) => l.id !== lesson.id)
-              .map((l) => (
+              .filter((l: typeof level.lessons[number]) => l.id !== lesson.id)
+              .map((l: typeof level.lessons[number]) => (
                 <Link
                   key={l.id}
                   to="/levels/$levelId/$lessonId"
