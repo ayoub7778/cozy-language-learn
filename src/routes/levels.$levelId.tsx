@@ -13,10 +13,9 @@ import { LessonListItem } from "@/components/LessonListItem";
 import { levelsQuery, levelWithLessonsQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/levels/$levelId")({
-  head: ({ params, loaderData }) => {
-    const level = loaderData?.level;
-    const title = level ? `${level.name} lessons — Linguava` : "Lessons — Linguava";
-    const desc = level?.description ?? "Browse language lessons by level.";
+  head: ({ params }) => {
+    const title = `Lessons — Linguava`;
+    const desc = "Browse language lessons by level.";
     return {
       meta: [
         { title },

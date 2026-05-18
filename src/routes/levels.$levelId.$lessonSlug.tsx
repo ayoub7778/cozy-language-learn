@@ -11,10 +11,9 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { lessonQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/levels/$levelId/$lessonSlug")({
-  head: ({ params, loaderData }) => {
-    const lesson = loaderData?.lesson;
-    const title = lesson ? `${lesson.title} — Linguava` : "Lesson — Linguava";
-    const desc = lesson?.description ?? "Lesson video and PDF.";
+  head: ({ params }) => {
+    const title = "Lesson — Linguava";
+    const desc = "Lesson video and PDF.";
     return {
       meta: [
         { title },
