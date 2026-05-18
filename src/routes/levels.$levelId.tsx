@@ -1,51 +1,63 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, PlayCircle, FileText } from "lucide-react";
+/**
+ * Route : /levels/$levelId
+ * ----------------------------------------------------------------
+ * Page d'un niveau : liste de toutes ses leçons.
+ * Données chargées depuis Supabase via une Server Function unique
+ * (jointure `levels → lessons`, pas de N+1).
+ */
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowLeft } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getLevel, levels } from "@/lib/lessons";
+import { LessonListItem } from "@/components/LessonListItem";
+import { levelsQuery, levelWithLessonsQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/levels/$levelId")({
   head: ({ params }) => {
-    const level = getLevel(params.levelId);
-    const title = level ? `${level.name} lessons — Linguava` : "Lessons — Linguava";
-    const desc = level?.description ?? "Browse language lessons by level.";
+    const title = `Lessons — Linguava`;
+    const desc = "Browse language lessons by level.";
     return {
       meta: [
         { title },
         { name: "description", content: desc },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
+        { property: "og:url", content: `/levels/${params.levelId}` },
       ],
     };
   },
-  loader: ({ params }) => {
-    const level = getLevel(params.levelId);
+  // Le loader préchauffe à la fois la liste des niveaux (pour la nav
+  // de bascule en haut) et le détail du niveau courant.
+  loader: async ({ params, context }) => {
+    const [, level] = await Promise.all([
+      context.queryClient.ensureQueryData(levelsQuery()),
+      context.queryClient.ensureQueryData(levelWithLessonsQuery(params.levelId)),
+    ]);
     if (!level) throw notFound();
     return { level };
   },
   component: LevelPage,
-  notFoundComponent: () => (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <div className="container mx-auto px-6 py-24 text-center">
-        <h1 className="text-3xl font-semibold">Level not found</h1>
-        <Link to="/" className="mt-4 inline-block text-primary">Back home</Link>
-      </div>
-    </div>
-  ),
-  errorComponent: ({ error }) => (
-    <div className="container mx-auto px-6 py-24 text-center text-muted-foreground">{error.message}</div>
-  ),
+  notFoundComponent: NotFoundView,
+  errorComponent: ErrorView,
 });
 
 function LevelPage() {
-  const { level } = Route.useLoaderData();
+  const { levelId } = Route.useParams();
+  const { data: levels } = useSuspenseQuery(levelsQuery());
+  const { data: level } = useSuspenseQuery(levelWithLessonsQuery(levelId));
+
+  // Garde-fou : si le cache renvoie null, on déclenche le NotFound.
+  if (!level) return <NotFoundView />;
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
       <div className="container mx-auto px-6 py-12">
-        <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
@@ -56,6 +68,7 @@ function LevelPage() {
             <p className="mt-3 max-w-2xl text-muted-foreground">{level.description}</p>
           </div>
 
+          {/* Bascule rapide entre niveaux */}
           <div className="flex gap-2">
             {levels.map((l) => (
               <Link
@@ -75,31 +88,41 @@ function LevelPage() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-4">
-          {level.lessons.map((lesson: typeof level.lessons[number], idx: number) => (
-            <Link
-              key={lesson.id}
-              to="/levels/$levelId/$lessonId"
-              params={{ levelId: level.id, lessonId: lesson.id }}
-              className="group flex items-center justify-between rounded-xl border border-border bg-card p-5 transition hover:border-primary"
-            >
-              <div className="flex items-start gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-sm font-medium text-secondary-foreground">
-                  {idx + 1}
-                </span>
-                <div>
-                  <h3 className="font-medium text-card-foreground">{lesson.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{lesson.description}</p>
-                  <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><PlayCircle className="h-3.5 w-3.5" /> {lesson.duration}</span>
-                    <span className="inline-flex items-center gap-1"><FileText className="h-3.5 w-3.5" /> PDF</span>
-                  </div>
-                </div>
-              </div>
-              <span className="text-sm text-muted-foreground transition group-hover:text-primary">Open →</span>
-            </Link>
+          {level.lessons.map((lesson, idx) => (
+            <LessonListItem key={lesson.id} lesson={lesson} index={idx + 1} />
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function NotFoundView() {
+  return (
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <div className="container mx-auto px-6 py-24 text-center">
+        <h1 className="text-3xl font-semibold">Level not found</h1>
+        <Link to="/" className="mt-4 inline-block text-primary">Back home</Link>
+      </div>
+    </div>
+  );
+}
+
+function ErrorView({ error, reset }: { error: Error; reset: () => void }) {
+  const router = useRouter();
+  return (
+    <div className="container mx-auto px-6 py-24 text-center">
+      <p className="text-muted-foreground">{error.message}</p>
+      <button
+        onClick={() => {
+          router.invalidate();
+          reset();
+        }}
+        className="mt-4 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+      >
+        Retry
+      </button>
     </div>
   );
 }

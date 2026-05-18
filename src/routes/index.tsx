@@ -1,32 +1,57 @@
+/**
+ * Route : / (Home)
+ * ----------------------------------------------------------------
+ * Page d'accueil — présente les 3 niveaux d'apprentissage récupérés
+ * dynamiquement depuis Supabase via TanStack Query.
+ *
+ * Stratégie de fetch :
+ *   - `loader` : préchauffe le cache côté SSR (`ensureQueryData`).
+ *   - `useSuspenseQuery` : lit le cache côté client, sans flash de
+ *     chargement, et bénéficie des refetchs en arrière-plan.
+ */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, PlayCircle, FileText, Sparkles } from "lucide-react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowRight, BookOpen, FileText, PlayCircle, Sparkles } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { levels } from "@/lib/lessons";
+import { LevelCard } from "@/components/LevelCard";
+import { levelsQuery, levelWithLessonsQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Linguava — Learn a new language, simply" },
-      { name: "description", content: "Clean, simple lessons across Beginner, Intermediate, and Advanced levels. Video + PDF for every lesson." },
+      {
+        name: "description",
+        content:
+          "Clean, simple lessons across Beginner, Intermediate, and Advanced levels. Video + PDF for every lesson.",
+      },
       { property: "og:title", content: "Linguava — Learn a new language, simply" },
-      { property: "og:description", content: "Clean, simple language lessons with video and PDF for every step." },
+      {
+        property: "og:description",
+        content: "Clean, simple language lessons with video and PDF for every step.",
+      },
     ],
   }),
-  component: Home,
+  // Préchargement SSR de la liste des niveaux + prefetch léger des leçons
+  // de chaque niveau pour accélérer la navigation suivante.
+  loader: async ({ context }) => {
+    const levels = await context.queryClient.ensureQueryData(levelsQuery());
+    // Fire-and-forget : ne bloque pas le rendu de la home.
+    for (const lvl of levels) {
+      context.queryClient.prefetchQuery(levelWithLessonsQuery(lvl.id));
+    }
+  },
+  component: HomePage,
 });
 
-const levelStyles: Record<string, { dot: string; chip: string }> = {
-  beginner: { dot: "bg-[var(--level-beginner)]", chip: "text-[var(--level-beginner)]" },
-  intermediate: { dot: "bg-[var(--level-intermediate)]", chip: "text-[var(--level-intermediate)]" },
-  advanced: { dot: "bg-[var(--level-advanced)]", chip: "text-[var(--level-advanced)]" },
-};
+function HomePage() {
+  const { data: levels } = useSuspenseQuery(levelsQuery());
 
-function Home() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      {/* Hero */}
+      {/* ----- HERO ----- */}
       <section className="relative overflow-hidden">
         <div
           aria-hidden
@@ -65,7 +90,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* ----- FEATURES ----- */}
       <section className="container mx-auto px-6 pb-20">
         <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
           {[
@@ -87,7 +112,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Levels */}
+      {/* ----- LEVELS (data Supabase) ----- */}
       <section id="levels" className="container mx-auto px-6 pb-24">
         <div className="flex items-end justify-between gap-6">
           <div>
@@ -97,38 +122,9 @@ function Home() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {levels.map((level, i) => {
-            const s = levelStyles[level.id];
-            return (
-              <Link
-                key={level.id}
-                to="/levels/$levelId"
-                params={{ levelId: level.id }}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-7 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg"
-              >
-                <span
-                  aria-hidden
-                  className={`absolute -right-10 -top-10 h-28 w-28 rounded-full opacity-20 blur-2xl ${s.dot}`}
-                />
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                    <span className={`h-2 w-2 rounded-full ${s.dot}`} />
-                    Level 0{i + 1}
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-primary" />
-                </div>
-                <h3 className="font-serif mt-6 text-3xl text-card-foreground">{level.name}</h3>
-                <p className={`mt-1 text-sm font-medium ${s.chip}`}>{level.tagline}</p>
-                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                  {level.description}
-                </p>
-                <div className="mt-6 flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground">
-                  <span>{level.lessons.length} lessons</span>
-                  <span className="font-medium text-foreground">Explore →</span>
-                </div>
-              </Link>
-            );
-          })}
+          {levels.map((level, i) => (
+            <LevelCardWithCount key={level.id} level={level} index={i} />
+          ))}
         </div>
       </section>
 
@@ -139,5 +135,26 @@ function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+/**
+ * Lit (depuis le cache déjà préchauffé par le loader) le détail d'un
+ * niveau pour afficher le nombre exact de leçons sur la carte.
+ */
+function LevelCardWithCount({
+  level,
+  index,
+}: {
+  level: { id: string; name: string; tagline: string; description: string; sortOrder: number };
+  index: number;
+}) {
+  const { data } = useSuspenseQuery(levelWithLessonsQuery(level.id));
+  return (
+    <LevelCard
+      level={level as Parameters<typeof LevelCard>[0]["level"]}
+      index={index}
+      lessonsCount={data?.lessons.length ?? 0}
+    />
   );
 }
