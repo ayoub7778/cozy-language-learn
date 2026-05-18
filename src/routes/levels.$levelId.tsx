@@ -51,9 +51,9 @@ function LevelPage() {
 
         <div className="mt-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-primary">{level.tagline}</p>
-            <h1 className="mt-1 text-4xl font-semibold tracking-tight text-foreground">{level.name}</h1>
-            <p className="mt-2 max-w-2xl text-muted-foreground">{level.description}</p>
+            <p className="text-sm font-medium text-accent">{level.tagline}</p>
+            <h1 className="font-serif mt-1 text-5xl text-foreground sm:text-6xl">{level.name}</h1>
+            <p className="mt-3 max-w-2xl text-muted-foreground">{level.description}</p>
           </div>
 
           <div className="flex gap-2">
