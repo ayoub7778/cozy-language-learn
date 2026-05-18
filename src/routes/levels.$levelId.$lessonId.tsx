@@ -55,11 +55,11 @@ function LessonPage() {
         </Link>
 
         <div className="mt-6">
-          <p className="text-sm text-primary">{level.name}</p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          <p className="text-sm font-medium text-accent">{level.name}</p>
+          <h1 className="font-serif mt-1 text-4xl text-foreground sm:text-5xl">
             {lesson.title}
           </h1>
-          <p className="mt-2 text-muted-foreground">{lesson.description}</p>
+          <p className="mt-3 text-muted-foreground">{lesson.description}</p>
         </div>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-border bg-card">
