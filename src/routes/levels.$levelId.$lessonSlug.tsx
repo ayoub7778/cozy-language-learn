@@ -12,7 +12,7 @@ import { lessonQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/levels/$levelId/$lessonSlug")({
   head: ({ params }) => {
-    const title = "Lesson — Linguava";
+    const title = "Lesson — LevelUp";
     const desc = "Lesson video and PDF.";
     return {
       meta: [

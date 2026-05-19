@@ -19,13 +19,13 @@ import { levelsQuery, levelWithLessonsQuery } from "@/lib/api/queries";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Linguava — Learn a new language, simply" },
+      { title: "LevelUp — Learn a new language, simply" },
       {
         name: "description",
         content:
           "Clean, simple lessons across Beginner, Intermediate, and Advanced levels. Video + PDF for every lesson.",
       },
-      { property: "og:title", content: "Linguava — Learn a new language, simply" },
+      { property: "og:title", content: "LevelUp — Learn a new language, simply" },
       {
         property: "og:description",
         content: "Clean, simple language lessons with video and PDF for every step.",
@@ -130,7 +130,7 @@ function HomePage() {
 
       <footer className="border-t border-border">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-2 px-6 py-8 text-sm text-muted-foreground">
-          <span>© {new Date().getFullYear()} Linguava</span>
+          <span>© {new Date().getFullYear()} LevelUp</span>
           <span className="font-serif italic">Learn a little, every day.</span>
         </div>
       </footer>
