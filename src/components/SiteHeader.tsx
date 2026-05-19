@@ -9,7 +9,7 @@ export function SiteHeader() {
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Languages className="h-4 w-4" />
           </span>
-          Linguava
+          LevelUp
         </Link>
         <nav className="flex items-center gap-6 text-sm text-muted-foreground">
           <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "text-foreground" }} className="hover:text-foreground transition-colors">

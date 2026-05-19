@@ -14,7 +14,7 @@ import { levelsQuery, levelWithLessonsQuery } from "@/lib/api/queries";
 
 export const Route = createFileRoute("/levels/$levelId")({
   head: ({ params }) => {
-    const title = `Lessons — Linguava`;
+    const title = `Lessons — LevelUp`;
     const desc = "Browse language lessons by level.";
     return {
       meta: [

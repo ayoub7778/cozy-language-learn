@@ -1,5 +1,5 @@
 /**
- * Types du domaine métier — Linguava
+ * Types du domaine métier — LevelUp
  * ----------------------------------------------------------------
  * Modèles partagés entre le Frontend (React/TanStack) et la couche
  * d'accès aux données Supabase. Centraliser les types ici garantit
