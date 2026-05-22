@@ -8,12 +8,12 @@ export interface RouterContext {
   auth: AuthState;
 }
 
-export const getRouter = () => {
+export const getRouter = (auth: AuthState) => {
   const queryClient = new QueryClient();
 
   const router = createRouter({
     routeTree,
-    context: { queryClient } as RouterContext,
+    context: { queryClient, auth } as RouterContext,
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
   });
