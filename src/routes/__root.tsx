@@ -10,9 +10,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import type { RouterContext } from "@/router";
 
 function NotFoundComponent() {
   return (
