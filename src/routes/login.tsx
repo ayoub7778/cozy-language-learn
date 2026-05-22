@@ -8,6 +8,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { LogIn, Mail, Lock, ArrowRight, Chrome } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
