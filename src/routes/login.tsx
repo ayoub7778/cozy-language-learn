@@ -50,16 +50,23 @@ function LoginPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    // Note : l'intégration Lovable Cloud OAuth sera utilisée
-    // si le connecteur social est activé.
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin + "/auth/callback" },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
 
-    if (oauthError) {
-      setError(oauthError.message);
+    if (result.error) {
+      setError(result.error instanceof Error ? result.error.message : String(result.error));
+      return;
     }
+
+    if (result.redirected) {
+      // Le navigateur redirige vers Google — rien à faire.
+      return;
+    }
+
+    // Tokens reçus en direct, session déjà établie.
+    router.invalidate();
+    router.navigate({ to: search.redirect });
   };
 
   return (
