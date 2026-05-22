@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LevelsLevelIdRouteImport } from './routes/levels.$levelId'
 import { Route as LevelsLevelIdLessonSlugRouteImport } from './routes/levels.$levelId.$lessonSlug'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -38,12 +44,14 @@ const LevelsLevelIdLessonSlugRoute = LevelsLevelIdLessonSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/levels/$levelId': typeof LevelsLevelIdRouteWithChildren
   '/levels/$levelId/$lessonSlug': typeof LevelsLevelIdLessonSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/levels/$levelId': typeof LevelsLevelIdRouteWithChildren
   '/levels/$levelId/$lessonSlug': typeof LevelsLevelIdLessonSlugRoute
 }
@@ -51,6 +59,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/levels/$levelId': typeof LevelsLevelIdRouteWithChildren
   '/levels/$levelId/$lessonSlug': typeof LevelsLevelIdLessonSlugRoute
 }
@@ -59,14 +68,21 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/signup'
     | '/levels/$levelId'
     | '/levels/$levelId/$lessonSlug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/levels/$levelId' | '/levels/$levelId/$lessonSlug'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/levels/$levelId'
+    | '/levels/$levelId/$lessonSlug'
   id:
     | '__root__'
     | '/'
     | '/login'
+    | '/signup'
     | '/levels/$levelId'
     | '/levels/$levelId/$lessonSlug'
   fileRoutesById: FileRoutesById
@@ -74,11 +90,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
   LevelsLevelIdRoute: typeof LevelsLevelIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -125,8 +149,19 @@ const LevelsLevelIdRouteWithChildren = LevelsLevelIdRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
   LevelsLevelIdRoute: LevelsLevelIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
