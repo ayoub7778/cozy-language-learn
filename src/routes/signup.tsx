@@ -54,14 +54,21 @@ function SignUpPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin + "/auth/callback" },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
 
-    if (oauthError) {
-      setError(oauthError.message);
+    if (result.error) {
+      setError(result.error instanceof Error ? result.error.message : String(result.error));
+      return;
     }
+
+    if (result.redirected) {
+      return;
+    }
+
+    router.invalidate();
+    router.navigate({ to: search.redirect });
   };
 
   return (
