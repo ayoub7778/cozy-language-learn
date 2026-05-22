@@ -71,19 +71,25 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "LevelUp — Learn a new language, simply" },
+      {
+        name: "description",
+        content:
+          "Clean, simple language lessons with video and PDF for every step.",
+      },
+      { name: "author", content: "LevelUp" },
+      { property: "og:title", content: "LevelUp — Learn a new language, simply" },
+      {
+        property: "og:description",
+        content: "Clean, simple language lessons with video and PDF for every step.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -117,6 +123,23 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const qc = useQueryClient();
+  const auth = useAuth();
+
+  /**
+   * Listener global auth : invalide le routeur et le cache React Query
+   * à chaque changement d'état (login / logout / refresh).
+   */
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      router.invalidate();
+      qc.invalidateQueries();
+    });
+    return () => subscription.unsubscribe();
+  }, [router, qc]);
 
   return (
     <QueryClientProvider client={queryClient}>
