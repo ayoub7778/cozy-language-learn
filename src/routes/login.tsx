@@ -4,7 +4,7 @@
  * Page de connexion — Email/Mot de passe + Google OAuth.
  * Redirige vers la page demandée (`redirect` param) après connexion.
  */
-import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { LogIn, Mail, Lock, ArrowRight, Chrome } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,11 +16,6 @@ export const Route = createFileRoute("/login")({
   validateSearch: (search) => ({
     redirect: (search.redirect as string) || "/",
   }),
-  beforeLoad: ({ context, search }) => {
-    if (context.auth.isAuthenticated) {
-      throw redirect({ to: search.redirect });
-    }
-  },
   component: LoginPage,
 });
 
