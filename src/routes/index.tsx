@@ -63,14 +63,14 @@ function HomePage() {
         />
         <div className="container mx-auto px-6 pt-20 pb-16 text-center sm:pt-28 sm:pb-24">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-            <Sparkles className="h-3 w-3 text-accent" /> Simple. Focused. Effective.
+            <Sparkles className="h-3 w-3 text-accent" /> بسيط. مركّز. فعّال.
           </span>
           <h1 className="font-serif mt-6 text-5xl leading-[1.05] text-foreground sm:text-7xl">
-            Learn a language,<br />
-            <em className="italic text-primary">one clean lesson</em> at a time.
+            تعلّم لغة،<br />
+            <em className="italic text-primary">درسًا واضحًا</em> في كل مرة.
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Pick your level and start learning with short videos and downloadable PDFs.
+            اختر مستواك وابدأ التعلّم مع مقاطع فيديو قصيرة وملفات PDF قابلة للتحميل.
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link
@@ -78,13 +78,13 @@ function HomePage() {
               params={{ levelId: "beginner" }}
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm transition hover:bg-primary/90"
             >
-              Start learning <ArrowRight className="h-4 w-4" />
+              ابدأ التعلّم <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
             <a
               href="#levels"
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition hover:bg-secondary"
             >
-              Browse levels
+              استعراض المستويات
             </a>
           </div>
         </div>
@@ -94,9 +94,9 @@ function HomePage() {
       <section className="container mx-auto px-6 pb-20">
         <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { icon: BookOpen, title: "3 levels", text: "Beginner to Advanced" },
-            { icon: PlayCircle, title: "Video lessons", text: "Watch and learn at your pace" },
-            { icon: FileText, title: "PDF guides", text: "Download notes for every lesson" },
+            { icon: BookOpen, title: "٣ مستويات", text: "من المبتدئ إلى المتقدّم" },
+            { icon: PlayCircle, title: "دروس فيديو", text: "شاهد وتعلّم بالوتيرة التي تناسبك" },
+            { icon: FileText, title: "ملفات PDF", text: "حمّل ملاحظات كل درس" },
           ].map(({ icon: Icon, title, text }) => (
             <div
               key={title}
