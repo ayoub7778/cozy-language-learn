@@ -17,10 +17,10 @@ export function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-6 text-sm text-muted-foreground">
           <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "text-foreground" }} className="hover:text-foreground transition-colors">
-            Home
+            الرئيسية
           </Link>
           <Link to="/levels/$levelId" params={{ levelId: "beginner" }} className="hover:text-foreground transition-colors">
-            Lessons
+            الدروس
           </Link>
 
           {/* Auth bar : Sign In / Sign Out */}
@@ -39,14 +39,14 @@ export function SiteHeader() {
                 className="gap-1.5 text-muted-foreground hover:text-foreground"
               >
                 <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Sign out</span>
+                <span className="hidden sm:inline">تسجيل الخروج</span>
               </Button>
             </div>
           ) : (
             <Link to="/login">
               <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
                 <LogIn className="h-4 w-4" />
-                <span className="hidden sm:inline">Sign in</span>
+                <span className="hidden sm:inline">تسجيل الدخول</span>
               </Button>
             </Link>
           )}
