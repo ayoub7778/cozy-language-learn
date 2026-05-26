@@ -120,13 +120,17 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthListener />
+      <Outlet />
+    </QueryClientProvider>
+  );
+}
+
+function AuthListener() {
   const router = useRouter();
   const qc = useQueryClient();
-
-  /**
-   * Listener global auth : invalide le routeur et le cache React Query
-   * à chaque changement d'état (login / logout / refresh).
-   */
   useEffect(() => {
     const {
       data: { subscription },
@@ -136,10 +140,5 @@ function RootComponent() {
     });
     return () => subscription.unsubscribe();
   }, [router, qc]);
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-    </QueryClientProvider>
-  );
+  return null;
 }
